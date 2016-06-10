@@ -1,0 +1,3 @@
+
+
+#kms_key=$(aws kms --region=us-east-1 create-key --description="kube-aws assets")

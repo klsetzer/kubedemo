@@ -1,30 +1,37 @@
 # CoreOS Demo
 
 ## Kubernetes Step-by-step
-1. Install kube-aws
-1. Download kubernetes
-1. Install my stuff
-1. run kube-creator
-1. deploy apps
-
-Talk about navigation/status commands
 
 ### My Kubernetes start instructions
+1. Install kube-aws
 1. Create KMS key
-1. Clone kubedemo
-1. cd $PROJECTS_HOME/pe/kube
-1. source env_kube.sh
-1. cluster_name frodo
-1. ./kube-creator
-1. start proxy
+1. Clone kubedemo and cd into it
+  1. git clone https://github.com/klsetzer/kubedemo.git
+  1. cd kubedemo
+1. Configure environment and create helpers
+  1. source env_kube.sh
+  1. cluster_name frodo
+1. Create Kubernetes cluster
+  1. ./kube-creator
+1. Check cluster status
+  1. kubectl cluster-info
+  1. May take a few minutes for cluster to finish configuring
+1. Start kube proxy
+  1. kubectl start proxy
 1. Launch dashboard
+  1. kubectl create -f kubernetes/cluster/addons/dashboard
 1. Connect to proxy URL
+  1. URL: http://localhost:8001/api/v1/proxy/namespaces/kube-system/services/kubernetes-dashboard
 1. Start guestbook/all-in-one
+  1. kubectl create -f kubernetes/examples/guestbook/all-in-one/guestbook-all-in-one.yamlles/guestbook/all-in-one/guestbook-all-in-one.yaml
 
+### Talk about navigation/status commands
 
-## Remember
-* Loggly username: setzer@liquidchicken.org
-* Loggly password: disAa93,
+### Demo cleanup
+1. cd $KUBEDEMO_HOME/<cluster_name>
+1. kube-aws destroy
+1. kill kubectl proxy process
+1. Remove kms key
 
 ## TODO
 1. Create in multiple AZs
@@ -45,7 +52,7 @@ Talk about navigation/status commands
   1. Cheaper demo
 
 
-### Industrialization
+### CoreOS + Fleet Industrialization
 1. Launching without using the bootstrap discover service
 1. Running fleetctl from dev workstation instead of logging into cluster
    https://coreos.com/fleet/docs/latest/using-the-client.html#remote-fleet-access
@@ -86,17 +93,6 @@ Talk about navigation/status commands
   1. downloaded kube-aws and installed in /usr/local
   1. Created an KMS key
     1. aws kms --region=<your-region> create-key --description="kube-aws assets"
-      {
-          "KeyMetadata": {
-              "KeyId": "0391e4f4-dfe4-4894-8205-2e4bbe703368",
-              "Description": "kube-aws assets",
-              "Enabled": true,
-              "KeyUsage": "ENCRYPT_DECRYPT",
-              "CreationDate": 1464905773.087,
-              "Arn": "arn:aws:kms:us-east-1:437443400885:key/0391e4f4-dfe4-4894-8205-2e4bbe703368",
-              "AWSAccountId": "437443400885"
-          }
-      }
   1. Download kubectl from curl -O https://storage.googleapis.com/kubernetes-release/release/v1.2.4/bin/darwin/amd64/kubectl
   1. kubectl --kubeconfig=kubeconfig get nodes
   1. The certificate management is complex.  PKI integration will be interesting.
