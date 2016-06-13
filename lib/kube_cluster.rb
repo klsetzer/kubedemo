@@ -5,29 +5,45 @@ class KubeCluster
   def initialize(cluster_name)
     @cluster_name = cluster_name
     @cfn_template_file = "#{@cluster_name}.stack-template.json"
-    @cfn_client = AwsOps::Cfn.new
+    @kms_key_arn = 'arn:aws:kms:us-east-1:437443400885:key/819a0470-5371-4217-942e-86abd5e3c979'
   end
 
   def create_cluster
     Dir.mkdir(@cluster_name)
     Dir.chdir(@cluster_name) do
-      step('Initialize Kube config') { puts KubeAws.init(@cluster_name) }
+      step('Initialize Kube config') { puts KubeAws.init(cluster_name: @cluster_name, az: 'us-east-1c', ssh_key_name: 'lc-us-east-1', kms_key_arn: @kms_key_arn) }
       step('Fix cluster config')     { puts fix_cluster_config }
       step('Render CFN template')    { puts KubeAws.render }
       step('Validate config files')  { puts KubeAws.validate }
       step('Export CFN template')    { puts KubeAws.export_cfn_template }
       step('Fix CFN template')       { puts fix_cfn_template }
-      File.symlink('../kube-creator', 'kube-creator')
       step('Create CFN stack')       { puts create_cfn_stack }
+      step('Start kubectl proxy')    { puts start_kubectl_proxy }
+    end
+  end
+
+  def destroy_cluster
+    Dir.chdir(@cluster_name) do
+      step('Kill kubectl proxy')     { puts kill_kubectl_proxy }
+      step('Remove kube cluster')    { puts KubeAws.destroy }
     end
   end
 
   private
 
+  def start_kubectl_proxy
+    puts 'start proxy'
+  end
+
+  def kill_kubectl_proxy
+    puts 'kill proxy'
+  end
+
   def create_cfn_stack
     stack_name = @cluster_name
-    @cfn_client.create_stack(stack_name, @cfn_template_file)
-    @cfn_client.assert_stack_status(stack_name, 'CREATE_COMPLETE')
+    cfn_client = AwsOps::Cfn.new
+    cfn_client.create_stack(stack_name, @cfn_template_file)
+    cfn_client.assert_stack_status(stack_name, 'CREATE_COMPLETE')
   end
 
   def fix_cfn_template

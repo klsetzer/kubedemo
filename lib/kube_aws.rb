@@ -1,13 +1,18 @@
 class KubeAws
-  def self.init(cluster_name)
+  def self.init(cluster_name:, az:, ssh_key_name:, kms_key_arn:)
+    region = az.chop
     %x{
     kube-aws init --cluster-name=#{cluster_name} \
     --external-dns-name=#{cluster_name}.aws.liquidchicken.org \
-    --region=us-east-1 \
-    --availability-zone=us-east-1c \
-    --key-name=lc-us-east-1 \
-    --kms-key-arn="arn:aws:kms:us-east-1:437443400885:key/819a0470-5371-4217-942e-86abd5e3c979"
+    --region=#{region} \
+    --availability-zone=#{az} \
+    --key-name=#{ssh_key_name} \
+    --kms-key-arn="#{kms_key_arn}"
     }
+  end
+
+  def self.destroy
+    %x{ kube-aws destroy }
   end
 
   def self.render
@@ -22,9 +27,3 @@ class KubeAws
     %x{ kube-aws up --export }
   end
 end
-
-def usage
-  puts 'create_kube_cluster <cluster_name>'
-  puts '  KUBE_CLUSTER_NAME environment variable must be set'
-end
-

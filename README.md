@@ -2,9 +2,13 @@
 
 ## Kubernetes Step-by-step
 
+### Preliminary work
+1. Create KMS CMK
+  1. Using ARN: arn:aws:kms:us-east-1:437443400885:key/819a0470-5371-4217-942e-86abd5e3c979
+1. Create IAM user in <account> with admin access
+
 ### My Kubernetes start instructions
 1. Install kube-aws
-1. Create KMS key
 1. Clone kubedemo and cd into it
   1. git clone https://github.com/klsetzer/kubedemo.git
   1. cd kubedemo
@@ -13,17 +17,19 @@
   1. cluster_name frodo
 1. Create Kubernetes cluster
   1. ./kube-creator
-1. Check cluster status
+1. Check cluster status *(How long does this take to stabilize?)*
   1. kubectl cluster-info
   1. May take a few minutes for cluster to finish configuring
 1. Start kube proxy
-  1. kubectl start proxy
+  1. kubectl start proxy &
 1. Launch dashboard
   1. kubectl create -f kubernetes/cluster/addons/dashboard
 1. Connect to proxy URL
   1. URL: http://localhost:8001/api/v1/proxy/namespaces/kube-system/services/kubernetes-dashboard
 1. Start guestbook/all-in-one
-  1. kubectl create -f kubernetes/examples/guestbook/all-in-one/guestbook-all-in-one.yamlles/guestbook/all-in-one/guestbook-all-in-one.yaml
+  1. kubectl create -f kubernetes/examples/guestbook/all-in-one/guestbook-all-in-one.yaml
+  1. kubectl describe service frontend
+  1. How long does it take this to become available? (~5m?)
 
 ### Talk about navigation/status commands
 
@@ -31,7 +37,6 @@
 1. cd $KUBEDEMO_HOME/<cluster_name>
 1. kube-aws destroy
 1. kill kubectl proxy process
-1. Remove kms key
 
 ## TODO
 1. Create in multiple AZs

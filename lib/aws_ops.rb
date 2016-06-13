@@ -33,4 +33,12 @@ module AwsOps
       puts "CFN stack creation failed"
     end
   end
+
+  class Kms
+    def self.create_key(description: 'kubedemo')
+      kms_client = Aws::KMS::Client.new
+      key = kms_client.create_key({ description: "#{description}" })
+      key.key_metadata.arn
+    end
+  end
 end

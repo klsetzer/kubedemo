@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'bundler/setup'
+
+require 'yaml'
+require 'json'
+require 'awesome_print'
+require 'rainbow'
+require 'aws-sdk'
+require_relative 'lib/kube_cluster'
+
+def usage
+  puts 'create_kube_cluster <cluster_name>'
+  puts '  KUBE_CLUSTER_NAME environment variable must be set'
+  exit
+end
+
+## Main ##
+cluster_name = ENV['KUBE_CLUSTER_NAME'] || usage
+
+kc = KubeCluster.new(cluster_name)
+kc.destroy_cluster
+
+# /usr/local/bin/kubectl --kubeconfig=/Users/ksetzer/Projects/kubedemo/frodo/kubeconfig proxy
